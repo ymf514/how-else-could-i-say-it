@@ -1,0 +1,39 @@
+/* =============================================================
+   THEME — Pastel Meadows palette. Change colors here only.
+   ============================================================= */
+:root {
+  /* Palette */
+  --mint: #70CEAA;
+  --grass: #688B59;
+  --sprout: #A6C28E;
+  --cream: #F5E6CB;
+  --coral: #DB9789;
+
+  /* Derived shades */
+  --mint-dark: #4FAF8B;
+  --grass-dark: #4E6C42;
+  --sprout-light: #DCE8CF;
+  --coral-dark: #BF7A6C;
+  --coral-light: #F6D9D2;
+
+  /* Surfaces & text */
+  --bg: #FBF3E4;
+  --paper: #FFFBF4;
+  --ink: #2F3B2C;
+  --ink-soft: #66735F;
+  --line: rgba(47, 59, 44, 0.12);
+
+  /* Card colors (match the printed cards) */
+  --tech-card: #A3CE9B;      /* green Technique Card */
+  --tech-card-dark: #86B77D;
+  --tech-back: var(--grass); /* card back */
+  --persp-card: #DCDCD9;     /* grey Perspective Card */
+  --persp-card-on: #B9BAB4;
+
+  /* Shape & type */
+  --radius: 22px;
+  --radius-sm: 14px;
+  --font: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --shadow-soft: 0 10px 30px rgba(104, 139, 89, 0.15);
+}

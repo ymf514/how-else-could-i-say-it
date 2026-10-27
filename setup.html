@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form Setup Helper</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    main { padding-top: 32px; }
+    ol { padding-left: 22px; } li { margin: 6px 0; }
+    code { font-family: ui-monospace, Menlo, monospace; background: var(--paper); padding: 1px 6px; border-radius: 6px; font-size: .9em; }
+    .keys { display: flex; flex-wrap: wrap; gap: 6px; }
+    .keys code { cursor: pointer; }
+    textarea { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+    .card { background: var(--paper); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-soft); }
+  </style>
+</head>
+<body>
+<main>
+  <section class="screen">
+    <h2 class="screen-title">Google Form 配置助手</h2>
+    <p class="hint">研究者专用（参与者不会看到）。把 Google 表单的题目对应到游戏数据，生成 <code>js/config.js</code> 里的 <code>fields</code>。</p>
+
+    <div class="card">
+      <ol>
+        <li>打开 Google 表单编辑页 → 右上角 <b>⋮</b> → <b>获取预填链接 (Get pre-filled link)</b>。</li>
+        <li>在每道题里<b>只输入它对应的数据键名</b>（例如 Participant ID 题输入 <code>pid</code>）。点击下面的键名可复制。</li>
+        <li>1–5 量表题如果是「线性量表」，没法输入文字——请先把这些题改成「简答题」，或者跳过它们，之后手动填 entry ID。</li>
+        <li>点「获取链接」→「复制链接」，粘贴到下面。</li>
+      </ol>
+      <p style="margin-top:10px"><b>可用键名：</b></p>
+      <div class="keys" id="keys"></div>
+    </div>
+
+    <div>
+      <label class="field-label" for="url">粘贴预填链接</label>
+      <textarea id="url" class="small" placeholder="https://docs.google.com/forms/d/e/.../viewform?usp=pp_url&entry.123=pid&..."></textarea>
+    </div>
+    <div class="row"><button class="btn" id="go">生成配置</button><span id="msg" class="hint"></span></div>
+
+    <div>
+      <label class="field-label" for="out">复制到 js/config.js（替换整个 <code>fields: { … }</code>）</label>
+      <textarea id="out" readonly onclick="this.select()"></textarea>
+    </div>
+  </section>
+</main>
+<script src="js/config.js"></script>
+<script>
+  const K = window.HECIS_FIELD_KEYS;
+  const max = window.HECIS_CONFIG.googleForm.maxRounds || 3;
+  const all = [...K.base];
+  for (let n = 1; n <= max; n++) K.round.forEach((k) => all.push(`r${n}_${k}`));
+
+  document.getElementById('keys').innerHTML = all.map((k) => `<code title="click to copy">${k}</code>`).join('');
+  document.getElementById('keys').addEventListener('click', (e) => {
+    if (e.target.tagName === 'CODE') navigator.clipboard?.writeText(e.target.textContent);
+  });
+
+  document.getElementById('go').addEventListener('click', () => {
+    const msg = document.getElementById('msg');
+    let url;
+    try { url = new URL(document.getElementById('url').value.trim()); }
+    catch { msg.textContent = '链接格式不对'; return; }
+    const map = {};
+    url.searchParams.forEach((v, k) => { if (k.startsWith('entry.')) map[v.trim()] = k; });
+    const unknown = Object.keys(map).filter((v) => !all.includes(v));
+    const lines = all.map((k) => `      ${k}: '${map[k] || ''}',`);
+    document.getElementById('out').value = '    fields: {\n' + lines.join('\n') + '\n    },';
+    const found = all.filter((k) => map[k]).length;
+    msg.textContent = `找到 ${found} 个字段` + (unknown.length ? `；无法识别：${unknown.join(', ')}` : '');
+    const base = url.origin + url.pathname;
+    if (base !== window.HECIS_CONFIG.googleForm.viewUrl) msg.textContent += `　｜ 记得把 viewUrl 改成：${base}`;
+  });
+</script>
+</body>
+</html>
