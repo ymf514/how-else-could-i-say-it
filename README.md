@@ -29,8 +29,6 @@
 python3 -m http.server 8123
 ```
 
-在本文件夹里运行，然后打开 http://localhost:8123 。直接双击 `index.html` 也能玩。
-
 ## 部署到 GitHub Pages
 
 1. 在 GitHub 新建仓库，把**本文件夹里的内容**放到仓库根目录并推送。
